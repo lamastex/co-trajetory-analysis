@@ -75,4 +75,28 @@ object Parse {
     CoTrajectoryUtils.getCoTrajectory(data)
   }
 
+  def identityTransformation(x:Double, y:Double): (Double, Double) = (x, y)
+
+  /* Parse the data for the synthetic CDR example and tests 
+   * Second parameter allows to perform any coordinate transformation. */
+  def syntheticCDR(dataFile: String, 
+    transformation: (Double, Double) => (Double, Double) = identityTransformation): Dataset[Trajectory] = {
+    val data: Dataset[MeasurementID] = spark.read.format("csv")
+      .options(Map("sep" -> ",", "header" -> "true", "inferSchema" -> "true"))
+      .load(dataFile)
+      .map{ line =>
+        val id = line.getAs[Int]("trajectory_id")
+        val t = line.getAs[java.sql.Timestamp]("connection_timestamp").getTime
+        val coords = line.getAs[String]("connection_location_wkt")
+          .replace("POINT(", "").replace(")", "")
+          .split(" ")
+          .map(part => part.toDouble)
+        val (x, y) = transformation(coords(0), coords(1))
+        val z = Location(Array(x, y))
+        MeasurementID(id, Measurement(t, z))
+      }
+    
+    CoTrajectoryUtils.getCoTrajectory(data)
+  }
+
 }

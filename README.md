@@ -33,7 +33,7 @@ problem with you local Spark installation.
 To get it running in a local spark-shell use the command
 
 ``` shell
-spark-shell --jars target/scala-2.11/co-traj_2.11-1.0.jar --packages com.graphhopper:map-matching:0.7.0,io.spray:spray-json_2.11:1.3.5
+spark-shell --jars target/scala-2.11/co-traj_2.11-1.0.jar --packages com.graphhopper:map-matching:0.7.0,io.spray:spray-json_2.11:1.3.5,org.locationtech.geotrellis:geotrellis-gdal_2.11:3.3.0
 ```
 
 You should then be able to run the first example
